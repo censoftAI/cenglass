@@ -1,1 +1,3 @@
-weight_path : /home/senai01/pub/weights/test_yolov8n_230805.pt
+CAM_WIDTH : 640
+CAM_HEIGHT : 480
+WEIGHT : best.pt

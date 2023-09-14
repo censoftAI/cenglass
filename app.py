@@ -7,7 +7,16 @@ import PIL.ImageFont as ImageFont
 
 from IPython.display import display
 
+import yaml
+
 print(f'opencv version {cv.__version__}')
+
+#%% read config file yaml
+with open('config.yaml') as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
+print(config)
+
+
 #%%
 cap = cv.VideoCapture(0)
 print(f'width: {cap.get(cv.CAP_PROP_FRAME_WIDTH)} , height: {cap.get(cv.CAP_PROP_FRAME_HEIGHT)}')
@@ -16,8 +25,8 @@ print(f'width: {cap.get(cv.CAP_PROP_FRAME_WIDTH)} , height: {cap.get(cv.CAP_PROP
 #%%
 # 원하는 해상도를 설정합니다.
 #3840 x 2160  2mp
-desired_width = 3840
-desired_height = 2160
+desired_width = 640
+desired_height = 480
 cap.set(cv.CAP_PROP_FRAME_WIDTH, desired_width)
 cap.set(cv.CAP_PROP_FRAME_HEIGHT, desired_height)
 
@@ -35,3 +44,7 @@ ret,frame = cap.read()
 
 display(Image.fromarray( cv.cvtColor(frame,cv.COLOR_BGR2RGB) ))
 # %%
+
+cap.release()
+# %%
+
