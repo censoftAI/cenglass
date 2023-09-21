@@ -81,8 +81,9 @@ green = (0, 255, 0)
 
 # 화면 설정
 screen_width, screen_height = int(config['SCREEN_WIDTH']), int(config['SCREEN_HEIGHT'])
-# screen = pygame.display.set_mode((desired_width, desired_height), pygame.FULLSCREEN)
-screen = pygame.display.set_mode((screen_width, screen_height))
+
+# screen = pygame.display.set_mode((screen_width, screen_height)) # 차모드 
+screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
 
 #wait message
 font = pygame.font.Font(None, 36)
