@@ -1,19 +1,20 @@
 #%%
+from ultralytics import YOLO,checks
 import cv2 as cv
-import PIL.Image as Image
-import PIL.ImageColor as ImageColor
-import PIL.ImageDraw as ImageDraw
-import PIL.ImageFont as ImageFont
+# import PIL.Image as Image
+# import PIL.ImageColor as ImageColor
+# import PIL.ImageDraw as ImageDraw
+# import PIL.ImageFont as ImageFont
 
-from IPython.display import display
+# from IPython.display import display
 import os
 import yaml
 import time
 
+
 import pygame
 import numpy as np
 
-from ultralytics import YOLO,checks
 print(f'opencv version {cv.__version__}')
 checks()
 
@@ -78,10 +79,6 @@ else:
     print(f"The webcam does not support the resolution {desired_width}x{desired_height}")
     print(f"Available resolution is {actual_width}x{actual_height}")
     
-# Open the default camera
-cap = cv.VideoCapture(0)
-
-#%%
 #%% Pygame 초기화
 pygame.init()
 # 화면 설정

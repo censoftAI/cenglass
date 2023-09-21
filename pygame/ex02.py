@@ -36,6 +36,10 @@ while True:
 
     # OpenCV로 프레임 캡처
     ret, frame = cap.read()
+    
+    # 좌우 반전
+    frame = cv2.flip(frame, 1)
+    
     if ret:
         # BGR에서 RGB로 변환
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
