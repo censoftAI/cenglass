@@ -43,6 +43,8 @@ print(config)
 data_queue = queue.Queue()
 cap_data_queue = queue.Queue(maxsize=1)
 
+msg_queue = queue.Queue()
+
  #종료 이벤트 객체 생성
 shutdown_event = threading.Event()
 
@@ -55,14 +57,21 @@ def inference_task():
         # Load class names
         class_names = model.names
         
+        msg_queue.put('model loaded success')
+        
         #warmup
         warm_up_img = np.zeros((640, 640, 3), dtype=np.uint8)  # Creating a blank image with dimensions 416x416
         print('Warming up the model...')
+        msg_queue.put('model warmed up')
+        time.sleep(0.5)
         model(warm_up_img)  # Performing a warm-up inference
         print(f'Model warmed up. ok')
+        msg_queue.put('model warmed up ok')
         
         #1초 대기
-        time.sleep(1)
+        time.sleep(5)
+        
+        msg_queue.put('detectio ai model is ready')
         
         while shutdown_event.is_set() == False :
             try :
@@ -118,7 +127,10 @@ def rendering_task():
         screen = pygame.display.set_mode((screen_width, screen_height))
     else:
         screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
-        
+    
+    font = pygame.font.Font(None, 36)
+    msg_gont = pygame.font.Font(None, 24)
+    _prev_msg_text = None    
     _prev_result = None
     break_flag = False
     while break_flag == False:
@@ -192,9 +204,20 @@ def rendering_task():
                 conf = int(box.conf.cpu().item() * 100)
                 
                 label_text = f"{class_name} {conf}%"
-                font = pygame.font.Font(None, 36)
+                
                 text_surface = font.render(label_text, True, green)
                 screen.blit(text_surface, (x1, y1 - 40))
+                
+        try :
+            _msg_text = msg_queue.get(block=False)
+            
+        except queue.Empty:
+            if _prev_msg_text != None:
+                _msg_text = _prev_msg_text
+            pass
+        
+        msg_text_surface = msg_gont.render(_msg_text, True, green)
+        screen.blit(msg_text_surface, (10, 10))
         
         pygame.display.update()
 
