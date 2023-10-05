@@ -62,7 +62,7 @@ def inference_task():
         #warmup
         warm_up_img = np.zeros((640, 640, 3), dtype=np.uint8)  # Creating a blank image with dimensions 416x416
         print('Warming up the model...')
-        msg_queue.put('model warmed up')
+        msg_queue.put('Warming up the model... please wait')
         time.sleep(0.5)
         model(warm_up_img)  # Performing a warm-up inference
         print(f'Model warmed up. ok')
@@ -129,11 +129,13 @@ def rendering_task():
         screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
     
     font = pygame.font.Font(None, 36)
-    msg_gont = pygame.font.Font(None, 24)
+    msg_font = pygame.font.Font(None, 24)
     _prev_msg_text = None    
     _prev_result = None
     break_flag = False
     while break_flag == False:
+        
+        last_time = time.time()  # Initialize last_time before entering the loop
         
         # 공유 데이터 큐에서 데이터 가져오기
         ret, frame = cap.read()
@@ -225,8 +227,19 @@ def rendering_task():
                 _msg_text = _prev_msg_text
             pass
         
-        msg_text_surface = msg_gont.render(_msg_text, True, green)
-        screen.blit(msg_text_surface, (10, 10))
+        msg_text_surface = msg_font.render(_msg_text, True, green)
+        screen.blit(msg_text_surface, (10, 0))
+        
+        # Calculate FPS
+        current_time = time.time()
+        elapsed_time = current_time - last_time
+        fps = 1 / elapsed_time if elapsed_time > 0 else 0
+        last_time = current_time
+        
+        # Render FPS
+        fps_text = f"FPS: {fps:.2f}"
+        fps_surface = msg_font.render(fps_text, True, green)
+        screen.blit(fps_surface, (10, 25))  # Adjust the position (10, 10) as needed
         
         pygame.display.update()
 
