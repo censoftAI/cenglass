@@ -143,7 +143,7 @@ def rendering_task():
         if ret == False:
             continue
         
-        frame = cv.flip(frame, 1)
+        # frame = cv.flip(frame, 1)
         
         ## 카메라전달 
         try:
