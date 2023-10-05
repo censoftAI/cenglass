@@ -1,3 +1,9 @@
 CAM_WIDTH : 640
 CAM_HEIGHT : 480
-WEIGHT : best.pt
+WEIGHT : test_v8n_230927.pt
+# WEIGHT : yolov8n.pt
+SCREEN_WIDTH : 960 
+SCREEN_HEIGHT : 600
+API_PORT : 21560
+API_IP : localhost
+WINDOWED : true
