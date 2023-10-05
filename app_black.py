@@ -37,7 +37,7 @@ print(config)
 
 
 
-# %%
+# %% model load
 try :
     model = YOLO(config['WEIGHT'])  # load a pretrained YOLOv8n detection model
     
@@ -51,11 +51,11 @@ except Exception as e:
     print('model load failed')
     quit()
 
-#%%
+#%% camera init
 cap = cv.VideoCapture(0)
 print(f'width: {cap.get(cv.CAP_PROP_FRAME_WIDTH)} , height: {cap.get(cv.CAP_PROP_FRAME_HEIGHT)}')
 
-#%%
+#%% screen init
 # 원하는 해상도를 설정합니다.
 #3840 x 2160  2mp
 desired_width = config['CAM_WIDTH']
@@ -81,9 +81,8 @@ green = (0, 255, 0)
 
 # 화면 설정
 screen_width, screen_height = int(config['SCREEN_WIDTH']), int(config['SCREEN_HEIGHT'])
-
-# screen = pygame.display.set_mode((screen_width, screen_height)) # 차모드 
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
+screen.fill(black)
 
 #wait message
 font = pygame.font.Font(None, 36)
@@ -93,6 +92,10 @@ textpos.centerx = screen.get_rect().centerx
 textpos.centery = screen.get_rect().centery
 screen.blit(text, textpos)
 pygame.display.update()
+
+#sleep 1 sec
+
+
 
 #%% Loop through the video frames
 while cap.isOpened():
@@ -121,7 +124,7 @@ while cap.isOpened():
         # Reset the background to black for the next frame
         
         # Use YOLO model to detect objects in the frame
-        results = model(source=frame, conf=0.5, verbose=False)
+        results = model(source=frame, conf=0.25, verbose=False)
         
             # 배경색으로 화면을 채움
         screen.fill(black)
