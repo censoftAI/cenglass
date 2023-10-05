@@ -71,7 +71,7 @@ def inference_task():
         #1초 대기
         time.sleep(5)
         
-        msg_queue.put('detectio ai model is ready')
+        msg_queue.put('AI Model Ready')
         
         while shutdown_event.is_set() == False :
             try :
@@ -176,7 +176,10 @@ def rendering_task():
         frame_surface = pygame.transform.flip(frame_surface, True, False)
 
         # 카메라 이미지 출력
-        screen.blit(pygame.transform.scale(frame_surface, (screen_width, screen_height)), (0, 0))
+        if config['BKG_CAM'] == True:
+            screen.blit(pygame.transform.scale(frame_surface, (screen_width, screen_height)), (0, 0))
+        else:
+            screen.fill(black)
 
         # 가운데 십자표시 그리기
         pygame.draw.line(screen, white, (screen_width // 2, 0), (screen_width // 2, screen_height), 1)
@@ -206,7 +209,13 @@ def rendering_task():
                 label_text = f"{class_name} {conf}%"
                 
                 text_surface = font.render(label_text, True, green)
-                screen.blit(text_surface, (x1, y1 - 40))
+                
+                # 중심에 출력
+                text_width, text_height = text_surface.get_size()
+                center_x = (x1 + x2) / 2 - text_width / 2
+                center_y = (y1 + y2) / 2 - text_height / 2
+                screen.blit(text_surface, (center_x, center_y))
+
                 
         try :
             _msg_text = msg_queue.get(block=False)
