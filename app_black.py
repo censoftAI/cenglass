@@ -39,15 +39,16 @@ with open(config_file_path) as f:
 print(config)
 
 
+#%% 쓰레드 관련 객체 선언
 # 공유 데이터 큐 생성
 data_queue = queue.Queue()
 cap_data_queue = queue.Queue(maxsize=1)
-
 msg_queue = queue.Queue()
 
- #종료 이벤트 객체 생성
+#종료 이벤트 객체 생성
 shutdown_event = threading.Event()
 
+# AI 추론 태스크 
 def inference_task():
     try :
         model = YOLO(config['WEIGHT'])  # load a pretrained YOLOv8n detection model
@@ -91,8 +92,7 @@ def inference_task():
     
     print('inference_task end')
         
-        
-    
+# 화면 랜더링 태스크
 def rendering_task():
     
     # camera init
@@ -115,6 +115,10 @@ def rendering_task():
     
     # pygame 초기화
     pygame.init()
+    
+    # hide mouse
+    pygame.mouse.set_visible(False)
+    
     # 색상 설정
     black = (0, 0, 0)
     white = (255, 255, 255)
@@ -256,6 +260,10 @@ def rendering_task():
 #%% 스레드 생성 및 시작
 inference_thread = threading.Thread(target=inference_task)
 inference_thread.start()
+
+
+time.sleep(30)
+print('start rendering_task')
 rendering_task()
 
 time.sleep(1)
