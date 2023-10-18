@@ -126,8 +126,11 @@ while cap.isOpened():
         # Use YOLO model to detect objects in the frame
         results = model(source=frame, conf=0.25, verbose=False)
         
-            # 배경색으로 화면을 채움
-        screen.fill(black)
+        # 배경색으로 화면을 채움
+        #screen.fill(black)
+        
+        # 화면에 카메라 영상을 출력
+        screen.blit(pygame.transform.scale(frame, (screen_width, screen_height)), (0, 0))
 
         # 가운데 십자표시 그리기
         pygame.draw.line(screen, white, (screen_width // 2, 0), (screen_width // 2, screen_height), 1)
