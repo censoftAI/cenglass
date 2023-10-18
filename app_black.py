@@ -262,7 +262,7 @@ inference_thread = threading.Thread(target=inference_task)
 inference_thread.start()
 
 
-time.sleep(30)
+#time.sleep(30)
 print('start rendering_task')
 rendering_task()
 
