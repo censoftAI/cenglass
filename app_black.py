@@ -93,6 +93,15 @@ def inference_task():
         # quit()
     
     print('inference_task end')
+    
+    
+class InformationWindow:
+    def __init__(self,img):
+        self.img = img
+    
+    def draw(self, screen):
+        if self.img != None:
+            screen.blit(self.img, (0, 0))
         
 def draw_crosshair(screen, color, size,x,y):
     pygame.draw.line(screen, color, (x - size, y), (x + size, y), 1)
@@ -154,6 +163,10 @@ def rendering_task():
     _prev_msg_text = None    
     _prev_result = None
     break_flag = False
+    
+    #설명창
+    infomation_Window = InformationWindow(None)
+    
     while break_flag == False:
         
         last_time = time.time()  # Initialize last_time before entering the loop
@@ -248,12 +261,21 @@ def rendering_task():
                         # 이미지 출력
                         # img_width, img_height = canon_img.get_size()
                         if class_name == 'canon':
-                            screen.blit(canon_img, (center_x, 0))
+                            infomation_Window.img = canon_img
+                            # screen.blit(canon_img, (center_x, 0))
                         elif class_name == 'heli':
-                            screen.blit(heli_img, (center_x, 0))
+                            # screen.blit(heli_img, (center_x, 0))
+                            infomation_Window.img = heli_img
                         elif class_name == 'wemosd1':
-                            screen.blit(wemosd1_img, (center_x, 0))
+                            # screen.blit(wemosd1_img, (center_x, 0))
+                            infomation_Window.img = wemosd1_img
+                        elif class_name == 'finger':
+                            infomation_Window.img = None
                         break
+                    print(class_name)
+                
+                    
+        infomation_Window.draw(screen)
                 
         try :
             _msg_text = msg_queue.get(block=False)
