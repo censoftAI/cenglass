@@ -186,6 +186,7 @@ def rendering_task():
     # font 설정
     # font = pygame.font.Font("path/to/your/font.ttf", 30) 
     title_font = pygame.font.Font('./font/NanumGothic.ttf', 36)
+    copyright_font = pygame.font.Font('./font/NanumGothicBold.ttf', 14)
     msg_font = pygame.font.Font(None, 24)
     
     # 설명서 이미지 로드
@@ -352,6 +353,13 @@ def rendering_task():
             title_surface = title_font.render(title_text, True, green)
             title_width, title_height = title_surface.get_size()
             screen.blit(title_surface, (screen_width / 2 - title_width / 2, 0))
+        
+        # copy right 표시    
+        copyright_text = "copyright (주)센소프트 2023"
+        screen.blit(copyright_font.render(copyright_text, True, green),
+                    (screen_width - 300, screen_height - 20))
+        
+        
         
         pygame.display.update()
 
