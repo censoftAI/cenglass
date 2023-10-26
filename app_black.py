@@ -103,14 +103,26 @@ class InformationWindow:
         self.closeBtn = pygame.image.load("./res/close_redX.png")
         # 닫기버튼 그리기 좌상단에 64x64 크기로 줄여서 그려준다.
         self.closeBtn = pygame.transform.scale(self.closeBtn, (64, 64))
+        self.posx = 0
+        self.posy = 0
+        
+    def checkCloseBtnCollision(self,x,y):
+        # 닫기버튼과 충돌검사
+        if self.closeBtn.get_rect(topleft=( self.posx,self.posy )).collidepoint(x, y):
+            print('closeBtn collision')
+            self.img = None
+            return True
+        else:
+            return False
     
     def draw(self, screen):
         if self.img != None:
             # 화면 중앙에 그리기 
             img_width, img_height = self.img.get_size()
-            screen.blit(self.img, (self.screenx/2 - img_width/2, 0))
+            self.posx = self.screenx/2 - img_width/2
             
-            screen.blit(self.closeBtn, (self.screenx - 64, 0))
+            screen.blit(self.img, (self.posx, self.posy))
+            screen.blit(self.closeBtn, (self.posx, self.posy))
             
             
             # screen.blit(self.img, (0, 0))
@@ -303,31 +315,9 @@ def rendering_task():
                             # screen.blit(wemosd1_img, (center_x, 0))
                             infomation_Window.img = wemosd1_img
                         break
-            
-                
-                    
-                        
-
-                    # 화면의 중점이 박스 안에 있는지 확인
-                    # if x1 < center_x < x2 and y1 < center_y < y2:
-                    #     # 이미지 출력
-                    #     # img_width, img_height = canon_img.get_size()
-                    #     if class_name == 'canon':
-                    #         infomation_Window.img = canon_img
-                    #         # screen.blit(canon_img, (center_x, 0))
-                    #     elif class_name == 'heli':
-                    #         # screen.blit(heli_img, (center_x, 0))
-                    #         infomation_Window.img = heli_img
-                    #     elif class_name == 'wemosd1':
-                    #         # screen.blit(wemosd1_img, (center_x, 0))
-                    #         infomation_Window.img = wemosd1_img
-                    #     elif class_name == 'finger':
-                    #         infomation_Window.img = None
-                    #     break
                     
         # 이미지창닫기 closeBtn 과 충돌검사
-        if infomation_Window.closeBtn.get_rect(topleft=(screen_width - 64, 0)).collidepoint(finger_cursor.x, finger_cursor.y):
-            infomation_Window.img = None
+        infomation_Window.checkCloseBtnCollision(finger_cursor.x,finger_cursor.y)
             
         # 정보창그리기             
         infomation_Window.draw(screen)
@@ -374,6 +364,8 @@ def rendering_task():
                     break_flag = True
                 elif event.key == pygame.K_1:
                     infomation_Window.img = wemosd1_img
+                elif event.key == pygame.K_0:
+                    infomation_Window.img = None
                     
             
     cap.release()
