@@ -96,12 +96,35 @@ def inference_task():
     
     
 class InformationWindow:
-    def __init__(self,img):
+    def __init__(self,img,screenx,screeny):
         self.img = img
+        self.screenx = screenx
+        self.screeny = screeny
+        self.closeBtn = pygame.image.load("./res/close_redX.png")
+        # 닫기버튼 그리기 좌상단에 64x64 크기로 줄여서 그려준다.
+        self.closeBtn = pygame.transform.scale(self.closeBtn, (64, 64))
     
     def draw(self, screen):
         if self.img != None:
-            screen.blit(self.img, (0, 0))
+            # 화면 중앙에 그리기 
+            img_width, img_height = self.img.get_size()
+            screen.blit(self.img, (self.screenx/2 - img_width/2, 0))
+            
+            screen.blit(self.closeBtn, (self.screenx - 64, 0))
+            
+            
+            # screen.blit(self.img, (0, 0))
+class FingerCursor:
+    def __init__(self,screenx,screeny,color):
+        # 초기값은 화면 중앙
+        self.x = screenx/2
+        self.y = screeny/2
+        self.color = color
+        pass
+    def draw(self,screen):
+        #빨간색 원 그리기,속이 빈원그리기 
+        pygame.draw.circle(screen, self.color, (self.x, self.y), 32, 0)
+        pass
         
 def draw_crosshair(screen, color, size,x,y):
     pygame.draw.line(screen, color, (x - size, y), (x + size, y), 1)
@@ -138,6 +161,7 @@ def rendering_task():
     black = (0, 0, 0)
     white = (255, 255, 255)
     green = (0, 255, 0)
+    
 
     # 화면 설정
     screen_width, screen_height = int(config['SCREEN_WIDTH']), int(config['SCREEN_HEIGHT'])
@@ -165,7 +189,10 @@ def rendering_task():
     break_flag = False
     
     #설명창
-    infomation_Window = InformationWindow(None)
+    infomation_Window = InformationWindow(None,screen_width,screen_height)
+    
+    #손가락 커서
+    finger_cursor = FingerCursor(screen_width,screen_height,(255,0,0))
     
     while break_flag == False:
         
@@ -243,6 +270,12 @@ def rendering_task():
                 x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                 x1, y1, x2, y2 = int(x1 * scalex), int(y1 * scaley), int(x2 * scalex), int(y2 * scaley)
                 
+                if class_name == 'finger':
+                    # position at center box
+                    finger_cursor.x = (x1 + x2) // 2
+                    finger_cursor.y = (y1 + y2) // 2
+                    continue
+                
                 # 겹치는 박스가 있는지 확인
                 overlap = False
                 for drawn_box in drawn_boxes:
@@ -255,11 +288,11 @@ def rendering_task():
                 if not overlap:
                     pygame.draw.rect(screen, green, (x1, y1, x2 - x1, y2 - y1), 2)
                     drawn_boxes.append((x1, y1, x2, y2))
-
-                    # 화면의 중점이 박스 안에 있는지 확인
-                    if x1 < center_x < x2 and y1 < center_y < y2:
+                    print(class_name)
+                    
+                    #손가락 커서와 겹치는지 확인
+                    if x1 < finger_cursor.x < x2 and y1 < finger_cursor.y < y2:
                         # 이미지 출력
-                        # img_width, img_height = canon_img.get_size()
                         if class_name == 'canon':
                             infomation_Window.img = canon_img
                             # screen.blit(canon_img, (center_x, 0))
@@ -269,13 +302,38 @@ def rendering_task():
                         elif class_name == 'wemosd1':
                             # screen.blit(wemosd1_img, (center_x, 0))
                             infomation_Window.img = wemosd1_img
-                        elif class_name == 'finger':
-                            infomation_Window.img = None
                         break
-                    print(class_name)
+            
                 
                     
+                        
+
+                    # 화면의 중점이 박스 안에 있는지 확인
+                    # if x1 < center_x < x2 and y1 < center_y < y2:
+                    #     # 이미지 출력
+                    #     # img_width, img_height = canon_img.get_size()
+                    #     if class_name == 'canon':
+                    #         infomation_Window.img = canon_img
+                    #         # screen.blit(canon_img, (center_x, 0))
+                    #     elif class_name == 'heli':
+                    #         # screen.blit(heli_img, (center_x, 0))
+                    #         infomation_Window.img = heli_img
+                    #     elif class_name == 'wemosd1':
+                    #         # screen.blit(wemosd1_img, (center_x, 0))
+                    #         infomation_Window.img = wemosd1_img
+                    #     elif class_name == 'finger':
+                    #         infomation_Window.img = None
+                    #     break
+                    
+        # 이미지창닫기 closeBtn 과 충돌검사
+        if infomation_Window.closeBtn.get_rect(topleft=(screen_width - 64, 0)).collidepoint(finger_cursor.x, finger_cursor.y):
+            infomation_Window.img = None
+            
+        # 정보창그리기             
         infomation_Window.draw(screen)
+        
+        # 손가락 커서 그리기
+        finger_cursor.draw(screen)
                 
         try :
             _msg_text = msg_queue.get(block=False)
@@ -314,6 +372,10 @@ def rendering_task():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     break_flag = True
+                elif event.key == pygame.K_1:
+                    infomation_Window.img = wemosd1_img
+                    
+            
     cap.release()
     print('rendering_task end')
 
